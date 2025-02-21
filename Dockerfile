@@ -4,6 +4,11 @@ FROM ubuntu:latest
 # Install dependencies
 RUN apt update && apt install -y curl tar jq sudo certbot
 
+# Set timezone secara manual ke UTC
+ENV TZ=UTC
+RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime && \
+    echo "UTC" > /etc/timezone
+
 # Tambahkan user "wings"
 RUN useradd -m wings
 
