@@ -2,7 +2,7 @@
 FROM ubuntu:latest
 
 # Install dependencies
-RUN apt update && apt install -y curl tar jq sudo
+RUN apt update && apt install -y curl tar jq sudo certbot
 
 # Tambahkan user "wings"
 RUN useradd -m wings
@@ -11,7 +11,11 @@ RUN useradd -m wings
 RUN curl -Lo /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64
 RUN chmod +x /usr/local/bin/wings
 
-# Copy konfigurasi Wings ke dalam container
+# Buat direktori yang diperlukan
+RUN mkdir -p /etc/pterodactyl /var/lib/pterodactyl/volumes /etc/letsencrypt/live/nodekuwings.up.railway.app /var/log/pterodactyl
+RUN chown -R wings:wings /var/log/pterodactyl
+
+# Copy konfigurasi Wings dan script entrypoint
 COPY config.yml /etc/pterodactyl/config.yml
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
