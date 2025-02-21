@@ -1,4 +1,4 @@
-# Gunakan image dasar
+# Gunakan image Debian terbaru
 FROM debian:latest
 
 # Set environment variables
@@ -13,10 +13,9 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     ca-certificates \
     tzdata \
+    iproute2 \
+    docker.io \
     && rm -rf /var/lib/apt/lists/*
-
-# Install Docker jika belum ada
-RUN curl -fsSL https://get.docker.com | sh
 
 # Buat user pterodactyl
 RUN useradd -m -d /home/pterodactyl -s /bin/bash pterodactyl
@@ -26,13 +25,16 @@ WORKDIR /home/pterodactyl
 
 # Download dan install Wings
 RUN curl -L -o wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64" \
-    && chmod +x wings
+    && chmod +x wings \
+    && mv wings /usr/local/bin/
 
 # Copy config file
 COPY config.yml /etc/pterodactyl/config.yml
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Expose ports
 EXPOSE 8080 2022
 
 # Start Wings
-CMD ["/home/pterodactyl/wings"]
+ENTRYPOINT ["/entrypoint.sh"]
