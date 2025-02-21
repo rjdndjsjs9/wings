@@ -1,31 +1,38 @@
-FROM ubuntu:22.04
+# Gunakan image dasar
+FROM debian:latest
 
-
+# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV LOG_ROTATION=false  # Menonaktifkan fitur log rotation Wings
+ENV LOG_ROTATION=false
 
-
+# Update package list dan install dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     sudo \
-    systemd \
-    util-linux \
-    docker.io \
+    gnupg \
+    software-properties-common \
+    ca-certificates \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Docker jika belum ada
+RUN curl -fsSL https://get.docker.com | sh
 
-RUN groupadd -g 999 pterodactyl && \
-    useradd -m -d /home/pterodactyl -u 999 -g 999 -s /bin/bash pterodactyl && \
-    usermod -aG docker pterodactyl
+# Buat user pterodactyl
+RUN useradd -m -d /home/pterodactyl -s /bin/bash pterodactyl
 
-
+# Set workdir
 WORKDIR /home/pterodactyl
 
+# Download dan install Wings
+RUN curl -L -o wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64" \
+    && chmod +x wings
 
+# Copy config file
 COPY config.yml /etc/pterodactyl/config.yml
 
-RUN chown -R pterodactyl:pterodactyl /home/pterodactyl /etc/pterodactyl
+# Expose ports
+EXPOSE 8080 2022
 
-EXPOSE 8080
-
-CMD service docker start && sudo -u pterodactyl /usr/local/bin/wings
+# Start Wings
+CMD ["/home/pterodactyl/wings"]
