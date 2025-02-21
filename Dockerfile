@@ -1,11 +1,11 @@
+# Gunakan image Ubuntu terbaru
 FROM ubuntu:20.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV LOG_ROTATION=false  # Menonaktifkan fitur log rotation Wings
 
-# Install dependencies
-RUN apt update && apt install -y curl tar unzip
+# Install dependencies yang diperlukan
+RUN apt update && apt install -y curl tar unzip sudo
 
 # Buat direktori Wings
 RUN mkdir -p /etc/pterodactyl /var/log/pterodactyl /var/lib/pterodactyl/archives
@@ -14,13 +14,13 @@ RUN mkdir -p /etc/pterodactyl /var/log/pterodactyl /var/lib/pterodactyl/archives
 RUN curl -Lo /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64
 RUN chmod +x /usr/local/bin/wings
 
-# Copy config
+# Copy konfigurasi Wings (pastikan kamu memiliki config.yml di direktori project)
 COPY config.yml /etc/pterodactyl/config.yml
 
-# Set permission agar tidak ada error "permission denied"
+# Set permission agar tidak terjadi error "permission denied"
 RUN chmod -R 777 /var/log/pterodactyl /var/lib/pterodactyl /etc/pterodactyl
 
-# Expose ports
+# Expose port yang digunakan Wings
 EXPOSE 8080
 
 # Jalankan Wings
