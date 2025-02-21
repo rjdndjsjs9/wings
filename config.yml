@@ -1,0 +1,18 @@
+debug: false
+uuid: 0f46ce9d-89bd-4b76-b4a5-fb5da1c3cb73
+token_id: nyCx3cVQq2ykbHMn
+token: acfNehU25cYM7EgO26bu9DNdeU4OI7P07YOgFvpPbuECYxsTu7ssNtPtY4hb0JHY
+api:
+  host: 0.0.0.0
+  port: 8080
+  ssl:
+    enabled: true
+    cert: /etc/letsencrypt/live/nodekuwings.up.railway.app/fullchain.pem
+    key: /etc/letsencrypt/live/nodekuwings.up.railway.app/privkey.pem
+  upload_limit: 100
+system:
+  data: /var/lib/pterodactyl/volumes
+  sftp:
+    bind_port: 2022
+allowed_mounts: []
+remote: 'https://panel.vsl-lorric-kyy.my.id'
