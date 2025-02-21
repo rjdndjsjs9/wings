@@ -16,9 +16,9 @@ RUN useradd -m wings
 RUN curl -Lo /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64
 RUN chmod +x /usr/local/bin/wings
 
-# Buat direktori yang diperlukan
-RUN mkdir -p /etc/pterodactyl /var/lib/pterodactyl/volumes /etc/letsencrypt/live/nodekuwings.up.railway.app /var/log/pterodactyl
-RUN chown -R wings:wings /var/log/pterodactyl
+# Buat direktori yang diperlukan dan atur izin
+RUN mkdir -p /etc/pterodactyl /var/lib/pterodactyl/volumes /var/lib/pterodactyl/archives /etc/letsencrypt/live/nodekuwings.up.railway.app /var/log/pterodactyl
+RUN chown -R wings:wings /var/lib/pterodactyl /var/log/pterodactyl
 
 # Copy konfigurasi Wings dan script entrypoint
 COPY config.yml /etc/pterodactyl/config.yml
