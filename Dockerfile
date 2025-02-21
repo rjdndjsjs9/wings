@@ -1,27 +1,35 @@
-# Gunakan image Ubuntu terbaru
-FROM ubuntu:20.04
+# Menggunakan image dasar Ubuntu
+FROM ubuntu:22.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
+ENV LOG_ROTATION=false  # Menonaktifkan fitur log rotation Wings
 
-# Install dependencies yang diperlukan
-RUN apt update && apt install -y curl tar unzip sudo
+# Update package list dan install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    sudo \
+    systemd \
+    util-linux \
+    docker.io \
+    && rm -rf /var/lib/apt/lists/*
 
-# Buat direktori Wings
-RUN mkdir -p /etc/pterodactyl /var/log/pterodactyl /var/lib/pterodactyl/archives
+# Tambahkan user pterodactyl dan tambahkan ke grup docker
+RUN groupadd -g 999 pterodactyl && \
+    useradd -m -d /home/pterodactyl -u 999 -g 999 -s /bin/bash pterodactyl && \
+    usermod -aG docker pterodactyl
 
-# Download & install Wings
-RUN curl -Lo /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64
-RUN chmod +x /usr/local/bin/wings
+# Set working directory
+WORKDIR /home/pterodactyl
 
-# Copy konfigurasi Wings (pastikan kamu memiliki config.yml di direktori project)
+# Copy file konfigurasi Wings
 COPY config.yml /etc/pterodactyl/config.yml
 
-# Set permission agar tidak terjadi error "permission denied"
-RUN chmod -R 777 /var/log/pterodactyl /var/lib/pterodactyl /etc/pterodactyl
+# Set permission agar user pterodactyl bisa mengakses Docker
+RUN chown -R pterodactyl:pterodactyl /home/pterodactyl /etc/pterodactyl
 
-# Expose port yang digunakan Wings
+# Expose port yang diperlukan
 EXPOSE 8080
 
-# Jalankan Wings
-CMD ["/usr/local/bin/wings", "--config", "/etc/pterodactyl/config.yml"]
+# Start Docker daemon sebelum menjalankan Wings
+CMD service docker start && sudo -u pterodactyl /usr/local/bin/wings
