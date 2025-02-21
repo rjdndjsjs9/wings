@@ -9,6 +9,9 @@ ENV TZ=UTC
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime && \
     echo "UTC" > /etc/timezone
 
+# Buat user dan grup pterodactyl secara manual
+RUN groupadd --system pterodactyl && useradd --system -g pterodactyl pterodactyl
+
 # Tambahkan user "wings"
 RUN useradd -m wings
 
